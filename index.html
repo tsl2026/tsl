@@ -2,335 +2,239 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#1f3864">
 <title>TSL スケジュール</title>
 <style>
-  :root{
-    --navy:#1f3864; --navy2:#2e5496; --tan:#bf9f60; --yel:#fff6d8;
-    --sun:#c00000; --sat:#0070c0; --sunbg:#fce4ec; --satbg:#deebf7;
-    --line:#d8dde6; --bg:#f4f6f9; --card:#ffffff; --ink:#1b2330;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:"Yu Gothic UI","Yu Gothic","ＭＳ Ｐゴシック","MS PGothic","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
-    -webkit-font-smoothing:antialiased;}
-  .wrap{max-width:1200px;margin:0 auto;padding:16px;}
-  header.top{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:14px;
-    padding:20px 22px;box-shadow:0 6px 18px rgba(31,56,100,.25);position:relative;overflow:hidden}
-  header.top h1{margin:0;font-size:26px;letter-spacing:.5px}
-  header.top .sub{opacity:.85;font-size:13px;margin-top:4px;letter-spacing:2px}
-  .rules{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--tan);
-    border-radius:10px;padding:14px 16px;margin:14px 0;font-size:14px;line-height:1.9}
-  .rules h3{margin:0 0 6px;font-size:14px;color:var(--navy)}
+  :root{--navy:#1f3864;--navy2:#2e5496;--tan:#a9873f;--tanbg:#fbf3dd;
+    --sun:#c62828;--sat:#1565c0;--sunbg:#fdecef;--satbg:#e8f1fb;
+    --ok:#1a7a3a;--tri:#b8860b;--ng:#c0392b;
+    --line:#e2e6ee;--bg:#eef1f6;--card:#fff;--ink:#1b2330;--mut:#6b7688}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5;
+    font-family:-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic UI","Noto Sans JP","ＭＳ Ｐゴシック",sans-serif}
+  .wrap{max-width:640px;margin:0 auto;padding:12px 12px 96px}
+  .hero{background:var(--navy);color:#fff;border-radius:16px;padding:16px 18px}
+  .hero h1{margin:0;font-size:22px;font-weight:700}
+  .hero .sub{opacity:.8;font-size:12px;letter-spacing:1.5px;margin-top:3px}
+  .rules{background:var(--card);border-radius:14px;padding:13px 15px;margin-top:12px;font-size:14px;line-height:1.9;border-left:5px solid var(--tan)}
+  .rules h3{margin:0 0 4px;font-size:14px;color:var(--navy)}
   .rules .em{color:var(--sun);font-weight:700}
-  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
-  .toolbar .spacer{flex:1}
-  button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;transition:.15s}
-  .btn{background:#eef1f6;color:var(--navy);border:1px solid var(--line)}
-  .btn:hover{background:#e2e7f0}
+  .bar{display:flex;align-items:center;gap:10px;margin:14px 2px 8px;flex-wrap:wrap}
+  .next{background:var(--navy2);color:#fff;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px}
+  .bar label{font-size:13px;color:var(--mut);display:flex;align-items:center;gap:5px}
+  .grow{flex:1}
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:10px;font-weight:600;transition:.12s;font-size:14px}
+  .btn{background:#fff;color:var(--navy);border:1px solid var(--line);padding:9px 14px}
+  .btn:active{transform:scale(.97)}
   .btn.primary{background:var(--navy);color:#fff}
-  .btn.primary:hover{background:var(--navy2)}
-  .btn.warn{background:var(--tan);color:#3a2e12}
-  .btn.small{padding:4px 9px;font-size:12px}
-  .pill{font-size:12px;padding:3px 10px;border-radius:999px;background:#eaeef5;color:var(--navy);font-weight:700}
-  .mode-edit .only-view{display:none}
-  .only-edit{display:none}
-  .mode-edit .only-edit{display:inline-flex}
-  table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border-radius:12px;overflow:hidden;
-    box-shadow:0 2px 10px rgba(20,30,60,.06);font-size:13px}
-  thead th{background:var(--navy);color:#fff;font-weight:700;padding:9px 6px;text-align:center;font-size:12px;position:sticky;top:0;z-index:2}
-  thead th.game{background:var(--tan);color:#2a2208}
-  th.mem{background:var(--navy2)}
-  td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--line);border-right:1px solid #eef1f5}
-  tr:last-child td{border-bottom:none}
-  td.date{font-weight:700;white-space:nowrap}
-  td.game{background:var(--yel);font-weight:600}
-  .wSun{color:var(--sun);font-weight:800}
-  .wSat{color:var(--sat);font-weight:800}
-  tr.rSun td.date,tr.rSun td.wd{background:var(--sunbg)}
-  tr.rSat td.date,tr.rSat td.wd{background:var(--satbg)}
-  .mark-o{color:#1a7a3a;font-weight:800}
-  .mark-t{color:#b8860b;font-weight:800}
-  .mark-x{color:#c0392b;font-weight:800}
-  .secband td{background:var(--navy2);color:#fff;font-weight:800;letter-spacing:3px;text-align:center;padding:6px}
-  .cell-in{width:100%;border:1px solid var(--line);border-radius:6px;padding:4px;font-family:inherit;font-size:13px;text-align:center;background:#fffef7}
-  select.att{border:1px solid var(--line);border-radius:6px;padding:3px;font-size:14px;font-family:inherit}
-  .blindbtn{background:#eef1f6;border:1px solid var(--line);color:var(--navy);border-radius:6px;padding:3px 8px;font-size:12px;cursor:pointer;font-weight:600}
-  .blindbtn.has{background:var(--navy);color:#fff}
-  .tag-setsu{display:inline-block;min-width:44px;font-weight:800;color:var(--navy);font-size:12px}
-  /* modal */
-  .overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
-  .overlay.open{display:flex}
-  .modal{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:86vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-  .modal .mh{background:var(--navy);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:10px}
-  .modal .mh h3{margin:0;font-size:16px;flex:1}
-  .modal .mb{padding:16px 18px}
-  .modal .x{background:transparent;color:#fff;font-size:20px;padding:0 6px}
-  table.blinds{font-size:13px}
-  table.blinds th{background:var(--navy2);position:static}
-  table.blinds td{padding:5px}
-  table.blinds tr.brk td{background:#fff3cd;color:#8a6d00;font-weight:700;letter-spacing:2px}
-  .foot{color:#7a8598;font-size:12px;margin:18px 4px;line-height:1.8}
-  .savebar{position:sticky;bottom:0;background:linear-gradient(0deg,var(--bg),rgba(244,246,249,0));padding:12px 0;display:none}
-  .mode-edit .savebar{display:flex;gap:8px;align-items:center}
-  .banner{background:#fff8e1;border:1px solid #f2d98a;color:#7a5b00;border-radius:8px;padding:8px 12px;font-size:12.5px;margin:10px 0;display:none}
+  .btn.tan{background:var(--tan);color:#fff}
+  .secband{margin:18px 4px 8px;font-size:13px;font-weight:800;letter-spacing:3px;color:var(--navy2);display:flex;align-items:center;gap:8px}
+  .secband:before,.secband:after{content:"";height:1px;background:var(--line);flex:1}
+  .card{background:var(--card);border-radius:16px;padding:0;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 4px rgba(20,30,60,.06)}
+  .chead{display:flex;align-items:center;gap:10px;padding:12px 14px;border-left:6px solid var(--navy2)}
+  .chead.sun{border-color:var(--sun)}.chead.sat{border-color:var(--sat)}
+  .setsu{font-size:12px;font-weight:800;color:var(--navy2);min-width:38px}
+  .dwrap{display:flex;align-items:baseline;gap:6px}
+  .date{font-size:19px;font-weight:800}
+  .wd{font-size:14px;font-weight:800}
+  .wd.sun{color:var(--sun)}.wd.sat{color:var(--sat)}
+  .game{margin-left:auto;background:var(--tanbg);color:var(--tan);font-weight:700;font-size:13px;padding:5px 11px;border-radius:999px;text-align:right;max-width:52%}
+  .att{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:10px 12px 4px}
+  .m{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border-radius:10px;background:#f6f8fb;min-height:56px;justify-content:center}
+  .m .nm{font-size:11px;color:var(--mut);line-height:1.2;text-align:center}
+  .m .rl{font-size:9px;color:#9aa3b2}
+  .m .mk{font-size:22px;font-weight:800;line-height:1}
+  .mk.o{color:var(--ok)}.mk.t{color:var(--tri)}.mk.x{color:var(--ng)}.mk.e{color:#c2c9d6}
+  .m.ed{cursor:pointer;border:1px dashed var(--line);background:#fff}
+  .m.ed:active{background:#eef3fb}
+  .crow{display:flex;gap:8px;padding:8px 12px 12px;align-items:center;flex-wrap:wrap}
+  .blindbtn{background:#eef2f8;color:var(--navy);border:1px solid var(--line);padding:8px 12px;border-radius:10px;font-weight:700;font-size:13px}
+  .blindbtn.has{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .meta{display:grid;grid-template-columns:1fr;gap:6px;padding:0 12px 12px}
+  .meta .f{display:flex;align-items:center;gap:8px;font-size:13px}
+  .meta .f b{color:var(--mut);font-weight:600;min-width:58px}
+  .meta input{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:14px;font-family:inherit}
+  .metaview{font-size:12.5px;color:var(--mut);padding:0 14px 12px;display:flex;gap:14px;flex-wrap:wrap}
+  .metaview span b{color:var(--ink)}
+  .ov{position:fixed;inset:0;background:rgba(15,22,40,.6);display:none;z-index:60;align-items:flex-end;justify-content:center}
+  .ov.open{display:flex}
+  .modal{background:#fff;width:100%;max-width:560px;max-height:90vh;overflow:auto;border-radius:18px 18px 0 0}
+  @media(min-width:600px){.ov{align-items:center}.modal{border-radius:18px}}
+  .mh{position:sticky;top:0;background:var(--navy);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
+  .mh h3{margin:0;font-size:15px;flex:1;line-height:1.3}
+  .mh .x{background:transparent;color:#fff;font-size:24px;padding:0 4px;border:none}
+  .mb{padding:14px 16px 20px}
+  table.bl{width:100%;border-collapse:collapse;font-size:14px}
+  table.bl th{background:var(--navy2);color:#fff;padding:8px 4px;font-size:12px;font-weight:700}
+  table.bl td{padding:8px 4px;text-align:center;border-bottom:1px solid var(--line)}
+  table.bl tr.brk td{background:var(--tanbg);color:var(--tan);font-weight:800;letter-spacing:2px}
+  table.bl input{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px 2px;text-align:center;font-size:14px;font-family:inherit}
+  .savebar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
+    padding:10px 12px;display:none;gap:8px;z-index:40;justify-content:center;flex-wrap:wrap}
+  .mode-edit .savebar{display:flex}
+  .savebar .btn{flex:1;min-width:120px;max-width:220px;padding:12px}
+  .banner{background:#fff8e1;border:1px solid #f2d98a;color:#7a5b00;border-radius:10px;padding:9px 12px;font-size:12.5px;margin:10px 2px;display:none}
   .mode-edit .banner{display:block}
-  @media(max-width:820px){
-    thead th,td{font-size:11px;padding:5px 3px}
-    header.top h1{font-size:21px}
-    .hide-sp{display:none}
-  }
+  .only-edit{display:none}.mode-edit .only-edit{display:inline-flex}
+  .mode-edit .only-view{display:none}
+  .foot{color:var(--mut);font-size:12px;margin:16px 4px;line-height:1.8}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="top">
-    <h1 id="pgtitle">TSL スケジュール</h1>
-    <div class="sub" id="pgsub">TOKYO SUPER LEAGUE 2026</div>
-  </header>
-
+  <div class="hero"><h1 id="pgtitle">TSL スケジュール</h1><div class="sub" id="pgsub"></div></div>
   <div class="rules" id="rules"></div>
-
-  <div class="toolbar">
-    <span class="pill" id="nextInfo">—</span>
-    <label class="only-view" style="font-size:13px"><input type="checkbox" id="upcomingOnly"> 今後の予定のみ</label>
-    <span class="spacer"></span>
-    <button class="btn only-view" id="editBtn">🔒 編集モード</button>
-    <span class="only-edit pill" style="background:#ffe1e1;color:#a11">編集モード</span>
-    <button class="btn warn only-edit" id="addBtn">＋ 予定を追加</button>
+  <div class="bar">
+    <span class="next" id="next">—</span>
+    <label class="only-view"><input type="checkbox" id="up"> 今後のみ</label>
+    <span class="grow"></span>
+    <button class="btn only-view" id="editBtn">🔒 編集</button>
+    <button class="btn tan only-edit" id="addBtn">＋ 予定</button>
     <button class="btn only-edit" id="exitBtn">閲覧に戻る</button>
   </div>
-
-  <div class="banner">編集内容はこのブラウザに自動保存されます。全員に反映するには <b>「保存（HTMLをダウンロード）」</b> を押し、ダウンロードしたファイルを公開先に差し替えてください。</div>
-
-  <div style="overflow-x:auto">
-    <table>
-      <thead><tr id="thead"></tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
-
-  <div class="savebar">
-    <button class="btn primary" id="saveBtn">💾 保存（HTMLをダウンロード）</button>
-    <button class="btn" id="exportBtn">JSONで書き出し</button>
-    <label class="btn" style="display:inline-flex">JSON読み込み<input type="file" id="importFile" accept=".json" hidden></label>
-  </div>
-
+  <div class="banner">編集はこの端末に自動保存されます。全員に反映するには下の「保存」でHTMLをダウンロードし、公開先に差し替えてください。</div>
+  <div id="list"></div>
   <div class="foot" id="foot"></div>
 </div>
-
-<div class="overlay" id="ov">
-  <div class="modal">
-    <div class="mh"><h3 id="ovTitle">ブラインド</h3><button class="x" id="ovClose">×</button></div>
-    <div class="mb" id="ovBody"></div>
-  </div>
+<div class="savebar">
+  <button class="btn primary" id="saveBtn">💾 保存（DL）</button>
+  <button class="btn" id="expBtn">JSON書出</button>
+  <label class="btn" style="flex:1;min-width:120px;max-width:220px;text-align:center">JSON読込<input type="file" id="impFile" accept=".json" hidden></label>
 </div>
-
+<div class="ov" id="ov"><div class="modal">
+  <div class="mh"><h3 id="ovTitle">ブラインド</h3><button class="x" id="ovClose" aria-label="閉じる">×</button></div>
+  <div class="mb" id="ovBody"></div>
+</div></div>
 <script id="tsl-data" type="application/json">{"title": "TSL スケジュール", "subtitle": "TOKYO SUPER LEAGUE 2026", "passcode": "tsl2026", "rules": [{"text": "レギュラーメンバーは", "em": "最低3節以上必須", "tail": ""}, {"text": "各節に出場するメンバーは、", "em": "該当節の3日前までに", "tail": "申請を完了"}], "members": [{"name": "だーます", "role": "captain"}, {"name": "しんや", "role": ""}, {"name": "きくみん", "role": "ladies"}, {"name": "Mitsu", "role": ""}, {"name": "いがJ", "role": ""}], "events": [{"id": "7-19-第0節", "setsu": "第0節", "section": "regular", "date": "2026-07-19", "label": "7/19", "weekday": "日", "game": "開会式", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "7-23-第1節", "setsu": "第1節", "section": "regular", "date": "2026-07-23", "label": "7/23", "weekday": "木", "game": "NLH", "attendance": {"だーます": "△", "しんや": "○", "きくみん": "△", "Mitsu": "×", "いがJ": "○"}, "players": "", "reentry": "", "result": "", "blinds": [{"lv": 1, "sb": 100, "bb": 100, "ante": 0, "dur": 20}, {"lv": 2, "sb": 100, "bb": 200, "ante": 200, "dur": 20}, {"lv": 3, "sb": 200, "bb": 300, "ante": 300, "dur": 20}, {"lv": 4, "sb": 200, "bb": 400, "ante": 400, "dur": 20}, {"lv": 5, "sb": 300, "bb": 600, "ante": 600, "dur": 20}, {"lv": "BREAK", "sb": "", "bb": "", "ante": "", "dur": 10}, {"lv": 6, "sb": 400, "bb": 800, "ante": 800, "dur": 20}]}, {"id": "7-26-第2節", "setsu": "第2節", "section": "regular", "date": "2026-07-26", "label": "7/26", "weekday": "日", "game": "Deep Stack", "attendance": {"だーます": "○", "しんや": "×", "きくみん": "×", "Mitsu": "○", "いがJ": "△"}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "7-30-第3節", "setsu": "第3節", "section": "regular", "date": "2026-07-30", "label": "7/30", "weekday": "木", "game": "PL Omaha", "attendance": {"だーます": "○", "しんや": "×", "きくみん": "○", "Mitsu": "×", "いがJ": "○"}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "8-2-第4節", "setsu": "第4節", "section": "regular", "date": "2026-08-02", "label": "8/2", "weekday": "日", "game": "Tag Match", "attendance": {"だーます": "○", "しんや": "△", "きくみん": "△", "Mitsu": "△", "いがJ": "○"}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "8-6-第5節", "setsu": "第5節", "section": "regular", "date": "2026-08-06", "label": "8/6", "weekday": "木", "game": "K.O Bounty", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "8-9-第6節", "setsu": "第6節", "section": "regular", "date": "2026-08-09", "label": "8/9", "weekday": "日", "game": "Captain Match", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "8-20-第7節", "setsu": "第7節", "section": "regular", "date": "2026-08-20", "label": "8/20", "weekday": "木", "game": "Ladies", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "8-23-第8節", "setsu": "第8節", "section": "regular", "date": "2026-08-23", "label": "8/23", "weekday": "日", "game": "3-League Tag Match", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "8-27-第9節", "setsu": "第9節", "section": "regular", "date": "2026-08-27", "label": "8/27", "weekday": "木", "game": "Deep Stack", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "8-30-第10節", "setsu": "第10節", "section": "regular", "date": "2026-08-30", "label": "8/30", "weekday": "日", "game": "Reversal Stack", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "9-3-第11節", "setsu": "第11節", "section": "regular", "date": "2026-09-03", "label": "9/3", "weekday": "木", "game": "6+ Short Deck", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "9-6-第12節", "setsu": "第12節", "section": "regular", "date": "2026-09-06", "label": "9/6", "weekday": "日", "game": "Cronus Structure", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "9-10-第13節", "setsu": "第13節", "section": "regular", "date": "2026-09-10", "label": "9/10", "weekday": "木", "game": "3-League NLH", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "9-13-第14節", "setsu": "第14節", "section": "regular", "date": "2026-09-13", "label": "9/13", "weekday": "日", "game": "NLH & PLO Tag Match", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "9-17-第15節", "setsu": "第15節", "section": "regular", "date": "2026-09-17", "label": "9/17", "weekday": "木", "game": "Ladies", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "9-20-第16節", "setsu": "第16節", "section": "regular", "date": "2026-09-20", "label": "9/20", "weekday": "日", "game": "3-League PL Omaha", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "9-21-第17節", "setsu": "第17節", "section": "regular", "date": "2026-09-21", "label": "9/21", "weekday": "月", "game": "6-League Match", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "9-24-第18節", "setsu": "第18節", "section": "regular", "date": "2026-09-24", "label": "9/24", "weekday": "木", "game": "3-League K.O Bounty", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "9-27-第19節", "setsu": "第19節", "section": "regular", "date": "2026-09-27", "label": "9/27", "weekday": "日", "game": "Mixed Tag Match", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "10-1-第20節", "setsu": "第20節", "section": "regular", "date": "2026-10-01", "label": "10/1", "weekday": "木", "game": "Reversal Stack", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "10-4-第21節", "setsu": "第21節", "section": "regular", "date": "2026-10-04", "label": "10/4", "weekday": "日", "game": "Final Captain Match", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "10-10-PS", "setsu": "PS", "section": "post", "date": "2026-10-10", "label": "10/10", "weekday": "土", "game": "Wild Card", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "10-10-PS", "setsu": "PS", "section": "post", "date": "2026-10-10", "label": "10/10", "weekday": "土", "game": "Semi Final", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "10-11-PS", "setsu": "PS", "section": "post", "date": "2026-10-11", "label": "10/11", "weekday": "日", "game": "Playoff", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}, {"id": "10-12-PS", "setsu": "PS", "section": "post", "date": "2026-10-12", "label": "10/12", "weekday": "月", "game": "FINAL", "attendance": {"だーます": "", "しんや": "", "きくみん": "", "Mitsu": "", "いがJ": ""}, "players": "", "reentry": "", "result": "", "blinds": []}]}</script>
 <script>
-let data = JSON.parse(document.getElementById('tsl-data').textContent);
-const LS='tsl_schedule_v1';
-try{const saved=localStorage.getItem(LS); if(saved) data=JSON.parse(saved);}catch(e){}
-let editing=false, curEvent=null;
-
+let data=JSON.parse(document.getElementById('tsl-data').textContent);
+const LS='tsl_schedule_v2';
+try{const s=localStorage.getItem(LS);if(s)data=JSON.parse(s);}catch(e){}
+let editing=false,curEvent=null;
 const $=s=>document.querySelector(s);
-const markClass=m=>m==='○'?'mark-o':m==='△'?'mark-t':m==='×'?'mark-x':'';
-const wdClass=w=>w==='日'?'wSun':w==='土'?'wSat':'';
+const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cls=m=>m==='○'?'o':m==='△'?'t':m==='×'?'x':'e';
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(data));}catch(e){}};
+const CYCLE=['','○','△','×'];
 
-function renderHeader(){
-  document.getElementById('pgtitle').textContent=data.title;
-  document.getElementById('pgsub').textContent=data.subtitle;
-  // rules
-  let rh='<h3>ルール</h3>';
-  data.rules.forEach(r=>{rh+=`<div>■${escapeHtml(r.text)}<span class="em">${escapeHtml(r.em)}</span>${escapeHtml(r.tail||'')}</div>`;});
-  document.getElementById('rules').innerHTML=rh;
-  // thead
-  let th='<th>節</th><th>日付</th><th>曜</th><th class="game">種目</th>';
-  data.members.forEach(m=>{th+=`<th class="mem">${escapeHtml(m.name)}${m.role?'<br><span style="font-weight:400;font-size:10px;opacity:.85">'+escapeHtml(m.role)+'</span>':''}</th>`;});
-  th+='<th>ブラインド</th><th>出場者</th><th>Re</th><th>結果</th>';
-  document.getElementById('thead').innerHTML=th;
+function renderTop(){
+  $('#pgtitle').textContent=data.title;$('#pgsub').textContent=data.subtitle;
+  let r='<h3>ルール</h3>';
+  data.rules.forEach(x=>r+=`<div>■${esc(x.text)}<span class="em">${esc(x.em)}</span>${esc(x.tail||'')}</div>`);
+  $('#rules').innerHTML=r;
 }
-function escapeHtml(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-
-function visibleEvents(){
-  if(!$('#upcomingOnly').checked) return data.events;
-  const today=new Date(); today.setHours(0,0,0,0);
-  return data.events.filter(e=>new Date(e.date)>=today);
+function vis(){
+  if(!$('#up').checked)return data.events;
+  const t=new Date();t.setHours(0,0,0,0);
+  return data.events.filter(e=>new Date(e.date)>=t);
 }
-
-function renderBody(){
-  const tb=document.getElementById('tbody'); tb.innerHTML='';
-  const evs=visibleEvents();
-  let lastSection='';
-  evs.forEach((e)=>{
-    const gi = data.events.indexOf(e);
-    if(e.section==='post' && lastSection!=='post'){
-      const band=document.createElement('tr'); band.className='secband';
-      band.innerHTML=`<td colspan="${4+data.members.length+4}">POST SEASON</td>`; tb.appendChild(band);
-    }
-    lastSection=e.section;
-    const tr=document.createElement('tr');
-    tr.className = e.weekday==='日'?'rSun':(e.weekday==='土'?'rSat':'');
-    let html=`<td><span class="tag-setsu">${e.section==='post'?'':escapeHtml(e.setsu)}</span></td>`;
-    html+=`<td class="date">${escapeHtml(e.label)}</td>`;
-    html+=`<td class="wd ${wdClass(e.weekday)}">${escapeHtml(e.weekday)}</td>`;
-    if(editing) html+=`<td class="game"><input class="cell-in" data-f="game" data-i="${gi}" value="${escapeHtml(e.game)}"></td>`;
-    else html+=`<td class="game">${escapeHtml(e.game)}</td>`;
+function updateNext(){
+  const t=new Date();t.setHours(0,0,0,0);
+  const n=data.events.find(e=>new Date(e.date)>=t);
+  $('#next').textContent=n?`次戦 ${n.label}(${n.weekday}) ${n.game}`:'シーズン終了';
+}
+function render(){
+  const L=$('#list');L.innerHTML='';const evs=vis();let sec='';
+  evs.forEach(e=>{
+    const gi=data.events.indexOf(e);
+    if(e.section==='post'&&sec!=='post'){const b=document.createElement('div');b.className='secband';b.textContent='POST SEASON';L.appendChild(b);}
+    sec=e.section;
+    const card=document.createElement('div');card.className='card';
+    const wc=e.weekday==='日'?'sun':e.weekday==='土'?'sat':'';
+    let h=`<div class="chead ${wc}">`;
+    h+=`<span class="setsu">${e.section==='post'?'PS':esc(e.setsu)}</span>`;
+    h+=`<div class="dwrap"><span class="date">${esc(e.label)}</span><span class="wd ${wc}">(${esc(e.weekday)})</span></div>`;
+    if(editing) h+=`<input class="game-in" data-i="${gi}" value="${esc(e.game)}" style="margin-left:auto;max-width:55%;border:1px solid var(--line);border-radius:8px;padding:6px;font-size:13px;font-family:inherit">`;
+    else h+=`<span class="game">${esc(e.game)}</span>`;
+    h+=`</div>`;
+    h+=`<div class="att">`;
     data.members.forEach(m=>{
       const v=e.attendance[m.name]||'';
-      if(editing){
-        html+=`<td><select class="att" data-att="${gi}" data-m="${escapeHtml(m.name)}">`+
-          ['','○','△','×'].map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')+`</select></td>`;
-      }else{
-        html+=`<td class="${markClass(v)}">${v}</td>`;
-      }
+      h+=`<div class="m ${editing?'ed':''}" ${editing?`data-att="${gi}" data-m="${esc(m.name)}"`:''}>`+
+         `<span class="nm">${esc(m.name)}</span>`+(m.role?`<span class="rl">${esc(m.role)}</span>`:'')+
+         `<span class="mk ${cls(v)}">${v||'—'}</span></div>`;
     });
-    const has=(e.blinds&&e.blinds.length)?'has':'';
-    html+=`<td><button class="blindbtn ${has}" data-blind="${gi}">${(e.blinds&&e.blinds.length)?'★ '+e.blinds.length+'Lv':'表示'}</button></td>`;
-    ['players','reentry','result'].forEach(f=>{
-      if(editing) html+=`<td><input class="cell-in" data-f="${f}" data-i="${gi}" value="${escapeHtml(e[f]||'')}"></td>`;
-      else html+=`<td>${escapeHtml(e[f]||'')}</td>`;
-    });
-    if(editing) html+=``;
-    tr.innerHTML=html;
-    tb.appendChild(tr);
-
+    h+=`</div>`;
+    const has=e.blinds&&e.blinds.length;
+    h+=`<div class="crow"><button class="blindbtn ${has?'has':''}" data-blind="${gi}">🃏 ブラインド${has?' '+e.blinds.length+'Lv':''}</button></div>`;
     if(editing){
-      const del=document.createElement('td');
+      h+=`<div class="meta">`+
+        ['players|出場者','reentry|Re回数','result|結果'].map(f=>{const[k,lb]=f.split('|');
+          return `<div class="f"><b>${lb}</b><input data-f="${k}" data-i="${gi}" value="${esc(e[k]||'')}"></div>`;}).join('')+
+        `<button class="btn" style="color:var(--ng)" data-del="${gi}">この予定を削除</button></div>`;
+    }else if(e.players||e.reentry||e.result){
+      h+=`<div class="metaview">`+
+        (e.players?`<span>出場者 <b>${esc(e.players)}</b></span>`:'')+
+        (e.reentry?`<span>Re <b>${esc(e.reentry)}</b></span>`:'')+
+        (e.result?`<span>結果 <b>${esc(e.result)}</b></span>`:'')+`</div>`;
     }
+    card.innerHTML=h;L.appendChild(card);
   });
-  bindCellEvents();
-  updateNext();
+  bind();updateNext();
 }
-
-function bindCellEvents(){
-  document.querySelectorAll('input.cell-in').forEach(inp=>{
-    inp.addEventListener('input',()=>{data.events[+inp.dataset.i][inp.dataset.f]=inp.value; save();});
-  });
-  document.querySelectorAll('select.att').forEach(sel=>{
-    sel.addEventListener('change',()=>{data.events[+sel.dataset.att].attendance[sel.dataset.m]=sel.value; save();});
-  });
-  document.querySelectorAll('button[data-blind]').forEach(b=>{
-    b.addEventListener('click',()=>openBlinds(+b.dataset.blind));
-  });
+function bind(){
+  document.querySelectorAll('.m.ed').forEach(el=>el.addEventListener('click',()=>{
+    const gi=+el.dataset.att,m=el.dataset.m,cur=data.events[gi].attendance[m]||'';
+    const nx=CYCLE[(CYCLE.indexOf(cur)+1)%4];data.events[gi].attendance[m]=nx;save();
+    const mk=el.querySelector('.mk');mk.textContent=nx||'—';mk.className='mk '+cls(nx);
+  }));
+  document.querySelectorAll('.game-in').forEach(i=>i.addEventListener('input',()=>{data.events[+i.dataset.i].game=i.value;save();}));
+  document.querySelectorAll('.meta input').forEach(i=>i.addEventListener('input',()=>{data.events[+i.dataset.i][i.dataset.f]=i.value;save();}));
+  document.querySelectorAll('button[data-blind]').forEach(b=>b.addEventListener('click',()=>openBlinds(+b.dataset.blind)));
+  document.querySelectorAll('button[data-del]').forEach(b=>b.addEventListener('click',()=>{
+    if(confirm('この予定を削除しますか？')){data.events.splice(+b.dataset.del,1);save();render();}
+  }));
 }
-
-function updateNext(){
-  const today=new Date(); today.setHours(0,0,0,0);
-  const nx=data.events.find(e=>new Date(e.date)>=today);
-  document.getElementById('nextInfo').textContent = nx?`次戦: ${nx.label}(${nx.weekday}) ${nx.game}`:'シーズン終了';
-}
-
-/* ---------- Blinds modal ---------- */
-function openBlinds(gi){
-  curEvent=gi; const e=data.events[gi];
-  document.getElementById('ovTitle').textContent=`${e.section==='post'?'':e.setsu+' '} ${e.game} ｜ ${e.label}(${e.weekday}) ブラインド`;
-  drawBlinds();
-  document.getElementById('ov').classList.add('open');
-}
+function openBlinds(gi){curEvent=gi;const e=data.events[gi];
+  $('#ovTitle').textContent=`${e.section==='post'?'':e.setsu+' '}${e.game}｜${e.label}(${e.weekday})`;
+  drawBlinds();$('#ov').classList.add('open');}
 function drawBlinds(){
-  const e=data.events[curEvent];
-  const rows=(e.blinds||[]);
-  let h='<table class="blinds"><thead><tr><th>Lv</th><th>SB</th><th>BB</th><th>アンティ</th><th>時間(分)</th>'+(editing?'<th></th>':'')+'</tr></thead><tbody>';
-  if(rows.length===0) h+=`<tr><td colspan="${editing?6:5}" style="color:#98a2b3;padding:14px">未登録${editing?'（下の「＋レベル追加」から登録）':''}</td></tr>`;
-  rows.forEach((r,idx)=>{
-    const brk=String(r.lv).toUpperCase()==='BREAK';
-    if(editing){
-      h+=`<tr class="${brk?'brk':''}">
-        <td><input class="cell-in bl" data-r="${idx}" data-k="lv" value="${escapeHtml(r.lv)}" style="width:64px"></td>
-        <td><input class="cell-in bl" data-r="${idx}" data-k="sb" value="${escapeHtml(r.sb)}" style="width:64px"></td>
-        <td><input class="cell-in bl" data-r="${idx}" data-k="bb" value="${escapeHtml(r.bb)}" style="width:64px"></td>
-        <td><input class="cell-in bl" data-r="${idx}" data-k="ante" value="${escapeHtml(r.ante)}" style="width:64px"></td>
-        <td><input class="cell-in bl" data-r="${idx}" data-k="dur" value="${escapeHtml(r.dur)}" style="width:56px"></td>
-        <td><button class="btn small" data-del="${idx}">✕</button></td></tr>`;
-    }else{
-      if(brk) h+=`<tr class="brk"><td colspan="4">BREAK</td><td>${escapeHtml(r.dur)}</td></tr>`;
-      else h+=`<tr><td>${escapeHtml(r.lv)}</td><td>${escapeHtml(r.sb)}</td><td>${escapeHtml(r.bb)}</td><td>${escapeHtml(r.ante)}</td><td>${escapeHtml(r.dur)}</td></tr>`;
-    }
+  const e=data.events[curEvent],rows=e.blinds||[];
+  let h='<table class="bl"><thead><tr><th>Lv</th><th>SB</th><th>BB</th><th>アンティ</th><th>分</th>'+(editing?'<th></th>':'')+'</tr></thead><tbody>';
+  if(!rows.length)h+=`<tr><td colspan="${editing?6:5}" style="color:#98a2b3;padding:16px">未登録${editing?'（下で追加）':''}</td></tr>`;
+  rows.forEach((r,i)=>{const brk=String(r.lv).toUpperCase()==='BREAK';
+    if(editing)h+=`<tr class="${brk?'brk':''}">
+      <td><input class="bi" data-r="${i}" data-k="lv" value="${esc(r.lv)}"></td>
+      <td><input class="bi" data-r="${i}" data-k="sb" value="${esc(r.sb)}"></td>
+      <td><input class="bi" data-r="${i}" data-k="bb" value="${esc(r.bb)}"></td>
+      <td><input class="bi" data-r="${i}" data-k="ante" value="${esc(r.ante)}"></td>
+      <td><input class="bi" data-r="${i}" data-k="dur" value="${esc(r.dur)}"></td>
+      <td><button class="btn" style="padding:6px 9px;color:var(--ng)" data-bd="${i}">✕</button></td></tr>`;
+    else{if(brk)h+=`<tr class="brk"><td colspan="4">BREAK</td><td>${esc(r.dur)}</td></tr>`;
+      else h+=`<tr><td>${esc(r.lv)}</td><td>${esc(r.sb)}</td><td>${esc(r.bb)}</td><td>${esc(r.ante)}</td><td>${esc(r.dur)}</td></tr>`;}
   });
   h+='</tbody></table>';
+  if(editing)h+=`<div style="display:flex;gap:8px;margin-top:14px"><button class="btn tan" id="addLv" style="flex:1;padding:12px">＋ レベル</button><button class="btn" id="addBrk" style="flex:1;padding:12px">＋ BREAK</button></div>`;
+  $('#ovBody').innerHTML=h;
   if(editing){
-    h+=`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-      <button class="btn warn" id="addLv">＋ レベル追加</button>
-      <button class="btn" id="addBrk">＋ BREAK追加</button>
-    </div>`;
-  }
-  document.getElementById('ovBody').innerHTML=h;
-  if(editing){
-    document.querySelectorAll('input.bl').forEach(inp=>inp.addEventListener('input',()=>{
-      let v=inp.value; const k=inp.dataset.k;
-      if(['sb','bb','ante','dur'].includes(k) && v!=='' && !isNaN(v)) v=+v;
-      data.events[curEvent].blinds[+inp.dataset.r][k]=v; save();
-    }));
-    document.querySelectorAll('button[data-del]').forEach(b=>b.addEventListener('click',()=>{
-      data.events[curEvent].blinds.splice(+b.dataset.del,1); save(); drawBlinds(); renderBody();
-    }));
-    $('#addLv').addEventListener('click',()=>{
-      const bl=data.events[curEvent].blinds; const nextLv=bl.filter(x=>!isNaN(x.lv)).length+1;
-      bl.push({lv:nextLv,sb:'',bb:'',ante:'',dur:20}); save(); drawBlinds(); renderBody();
-    });
-    $('#addBrk').addEventListener('click',()=>{
-      data.events[curEvent].blinds.push({lv:'BREAK',sb:'',bb:'',ante:'',dur:10}); save(); drawBlinds(); renderBody();
-    });
+    document.querySelectorAll('.bi').forEach(i=>i.addEventListener('input',()=>{let v=i.value,k=i.dataset.k;
+      if(['sb','bb','ante','dur'].includes(k)&&v!==''&&!isNaN(v))v=+v;data.events[curEvent].blinds[+i.dataset.r][k]=v;save();}));
+    document.querySelectorAll('button[data-bd]').forEach(b=>b.addEventListener('click',()=>{data.events[curEvent].blinds.splice(+b.dataset.bd,1);save();drawBlinds();render();}));
+    $('#addLv').addEventListener('click',()=>{const bl=data.events[curEvent].blinds;const n=bl.filter(x=>!isNaN(x.lv)).length+1;bl.push({lv:n,sb:'',bb:'',ante:'',dur:20});save();drawBlinds();render();});
+    $('#addBrk').addEventListener('click',()=>{data.events[curEvent].blinds.push({lv:'BREAK',sb:'',bb:'',ante:'',dur:10});save();drawBlinds();render();});
   }
 }
-
-/* ---------- edit mode ---------- */
-function setMode(on){
-  editing=on;
-  document.body.classList.toggle('mode-edit',on);
-  renderBody();
-}
-$('#editBtn').addEventListener('click',()=>{
-  const p=prompt('編集用パスコードを入力してください');
-  if(p===null) return;
-  if(p===data.passcode) setMode(true);
-  else alert('パスコードが違います');
-});
+function setMode(on){editing=on;document.body.classList.toggle('mode-edit',on);render();}
+$('#editBtn').addEventListener('click',()=>{const p=prompt('編集用パスコード');if(p===null)return;p===data.passcode?setMode(true):alert('パスコードが違います');});
 $('#exitBtn').addEventListener('click',()=>setMode(false));
-$('#upcomingOnly').addEventListener('change',renderBody);
-
-$('#addBtn').addEventListener('click',()=>{
-  const label=prompt('日付 (例 8/13)'); if(!label) return;
-  const [mo,da]=label.split('/').map(x=>parseInt(x,10));
-  const wdn=['日','月','火','水','木','金','土'];
-  const d=new Date(2026,mo-1,da);
-  const at={}; data.members.forEach(m=>at[m.name]='');
-  data.events.push({id:label+'-new',setsu:prompt('節 (例 第22節、空欄可)')||'',section:'regular',
-    date:`2026-${String(mo).padStart(2,'0')}-${String(da).padStart(2,'0')}`,label:`${mo}/${da}`,
-    weekday:wdn[d.getDay()],game:prompt('種目')||'',attendance:at,players:'',reentry:'',result:'',blinds:[]});
-  data.events.sort((a,b)=>new Date(a.date)-new Date(b.date) || (a.section>b.section?1:-1));
-  save(); renderBody();
-});
-
-/* save / export / import */
-function download(name,content,type){
-  const b=new Blob([content],{type}); const u=URL.createObjectURL(b);
-  const a=document.createElement('a'); a.href=u; a.download=name; a.click(); URL.revokeObjectURL(u);
-}
-$('#saveBtn').addEventListener('click',()=>{
-  document.getElementById('tsl-data').textContent=JSON.stringify(data);
-  const wasEdit=document.body.classList.contains('mode-edit');
-  document.body.classList.remove('mode-edit');
-  const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
-  if(wasEdit) document.body.classList.add('mode-edit');
-  download('TSL.html',html,'text/html');
-});
-$('#exportBtn').addEventListener('click',()=>download('tsl_data.json',JSON.stringify(data,null,2),'application/json'));
-$('#importFile').addEventListener('change',ev=>{
-  const f=ev.target.files[0]; if(!f) return; const r=new FileReader();
-  r.onload=()=>{try{data=JSON.parse(r.result); save(); renderHeader(); renderBody(); alert('読み込みました');}catch(e){alert('JSONの読み込みに失敗しました');}};
-  r.readAsText(f);
-});
+$('#up').addEventListener('change',render);
+$('#addBtn').addEventListener('click',()=>{const l=prompt('日付 (例 8/13)');if(!l)return;const[mo,da]=l.split('/').map(x=>parseInt(x,10));
+  const wn=['日','月','火','水','木','金','土'];const d=new Date(2026,mo-1,da);const at={};data.members.forEach(m=>at[m.name]='');
+  data.events.push({id:l+'-n',setsu:prompt('節 (例 第22節、空欄可)')||'',section:'regular',date:`2026-${String(mo).padStart(2,'0')}-${String(da).padStart(2,'0')}`,label:`${mo}/${da}`,weekday:wn[d.getDay()],game:prompt('種目')||'',attendance:at,players:'',reentry:'',result:'',blinds:[]});
+  data.events.sort((a,b)=>new Date(a.date)-new Date(b.date)||(a.section>b.section?1:-1));save();render();});
+function dl(n,c,t){const b=new Blob([c],{type:t}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u);}
+$('#saveBtn').addEventListener('click',()=>{document.getElementById('tsl-data').textContent=JSON.stringify(data);
+  const we=document.body.classList.contains('mode-edit');document.body.classList.remove('mode-edit');
+  const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;if(we)document.body.classList.add('mode-edit');dl('index.html',html,'text/html');});
+$('#expBtn').addEventListener('click',()=>dl('tsl_data.json',JSON.stringify(data,null,2),'application/json'));
+$('#impFile').addEventListener('change',ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{data=JSON.parse(r.result);save();renderTop();render();alert('読み込みました');}catch(e){alert('読み込み失敗');}};r.readAsText(f);});
 $('#ovClose').addEventListener('click',()=>$('#ov').classList.remove('open'));
 $('#ov').addEventListener('click',e=>{if(e.target.id==='ov')$('#ov').classList.remove('open');});
-
-document.getElementById('foot').innerHTML=
- '公開方法: このHTMLファイルを Netlify Drop・GitHub Pages・Cloudflare Pages などにアップすると、リンクを知っている人は誰でも閲覧できます。'+
- '<br>更新: 「編集モード」で変更 → 「保存（HTMLをダウンロード）」→ 公開先のファイルを差し替え。編集パスコードの初期値は tsl2026 です（コード内 passcode で変更可）。';
-
-renderHeader(); setMode(false);
+$('#foot').innerHTML='公開: このファイル(index.html)をGitHub Pages等に置くと、リンクを知る人は誰でも閲覧できます。<br>更新: 「編集」で変更→「保存(DL)」→公開先のindex.htmlを差し替え。編集パスコード初期値 tsl2026。';
+renderTop();setMode(false);
 </script>
 </body>
 </html>
