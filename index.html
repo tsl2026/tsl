@@ -32,6 +32,11 @@
   .btn.tan{background:var(--tan);color:#fff}
   .secband{margin:18px 4px 8px;font-size:13px;font-weight:800;letter-spacing:3px;color:var(--navy2);display:flex;align-items:center;gap:8px}
   .secband:before,.secband:after{content:"";height:1px;background:var(--line);flex:1}
+  .search{display:flex;gap:8px;margin:0 2px 12px;flex-wrap:wrap;align-items:center}
+  .search select{flex:1;min-width:130px;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink)}
+  .search select:disabled{background:#f2f4f8;color:#a8b0bd}
+  .search .btn{flex:0 0 auto}
+  .empty{text-align:center;color:var(--mut);padding:34px 10px;font-size:14px}
   .card{background:var(--card);border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 4px rgba(20,30,60,.06)}
   .chead{display:flex;align-items:center;gap:10px;padding:12px 14px 8px;border-left:6px solid var(--navy2)}
   .chead.sun{border-color:var(--sun)}.chead.sat{border-color:var(--sat)}
@@ -102,6 +107,11 @@
     <button class="btn only-edit" id="exitBtn">閲覧に戻る</button>
   </div>
   <div class="banner">編集はこの端末に自動保存されます。全員に反映するには下の「保存」でHTMLをダウンロードし、公開先に差し替えてください。</div>
+  <div class="search">
+    <select id="scat"><option value="">🔍 カテゴリー</option><option value="players">出場者</option><option value="game">種目</option><option value="date">日付</option></select>
+    <select id="sval" disabled><option value="">—</option></select>
+    <button class="btn" id="sclear">クリア</button>
+  </div>
   <div id="list"></div>
   <div class="foot" id="foot"></div>
 </div>
@@ -133,11 +143,19 @@ function renderTop(){
   data.rules.forEach(x=>r+=`<div>■${esc(x.text)}<span class="em">${esc(x.em)}</span>${esc(x.tail||'')}</div>`);
   $('#rules').innerHTML=r;
 }
-function vis(){if(!$('#up').checked)return data.events;const t=new Date();t.setHours(0,0,0,0);return data.events.filter(e=>new Date(e.date)>=t);}
+let search={cat:'',val:''};
+function vis(){let evs=data.events;
+  if($('#up').checked){const t=new Date();t.setHours(0,0,0,0);evs=evs.filter(e=>new Date(e.date)>=t);}
+  if(search.cat&&search.val){evs=evs.filter(e=>{
+    if(search.cat==='players')return (e.players||'').split('・').includes(search.val);
+    if(search.cat==='game')return e.game===search.val;
+    if(search.cat==='date')return e.label===search.val;return true;});}
+  return evs;}
 function updateNext(){const t=new Date();t.setHours(0,0,0,0);const n=data.events.find(e=>new Date(e.date)>=t);
   $('#next').textContent=n?`次戦 ${n.label}(${n.weekday}) ${n.game}`:'シーズン終了';}
 function render(){
   const L=$('#list');L.innerHTML='';const evs=vis();let sec='';
+  if(!evs.length){L.innerHTML='<div class="empty">該当する予定がありません</div>';updateNext();return;}
   evs.forEach(e=>{
     const gi=data.events.indexOf(e);
     if(e.section==='post'&&sec!=='post'){const b=document.createElement('div');b.className='secband';b.textContent='POST SEASON';L.appendChild(b);}
@@ -220,6 +238,17 @@ function setMode(on){editing=on;document.body.classList.toggle('mode-edit',on);r
 $('#editBtn').addEventListener('click',()=>{const p=prompt('編集用パスコード');if(p===null)return;p===data.passcode?setMode(true):alert('パスコードが違います');});
 $('#exitBtn').addEventListener('click',()=>setMode(false));
 $('#up').addEventListener('change',render);
+function uniq(a){return [...new Set(a)];}
+function fillVals(){const cat=$('#scat').value;search.cat=cat;search.val='';const sv=$('#sval');
+  if(!cat){sv.disabled=true;sv.innerHTML='<option value="">—</option>';render();return;}
+  sv.disabled=false;let opts=[];
+  if(cat==='players')opts=data.members.map(m=>[m.name,m.name]);
+  else if(cat==='game')opts=uniq(data.events.map(e=>e.game).filter(Boolean)).map(g=>[g,g]);
+  else if(cat==='date')opts=data.events.map(e=>[e.label,`${e.label}(${e.weekday}) ${e.game}`]);
+  sv.innerHTML='<option value="">すべて表示</option>'+opts.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join('');render();}
+$('#scat').addEventListener('change',fillVals);
+$('#sval').addEventListener('change',()=>{search.val=$('#sval').value;render();});
+$('#sclear').addEventListener('click',()=>{$('#scat').value='';fillVals();});
 $('#addBtn').addEventListener('click',()=>{const l=prompt('日付 (例 8/13)');if(!l)return;const[mo,da]=l.split('/').map(x=>parseInt(x,10));
   const wn=['日','月','火','水','木','金','土'];const d=new Date(2026,mo-1,da);const at={};data.members.forEach(m=>at[m.name]='');
   data.events.push({id:l+'-n',setsu:prompt('節 (例 第22節、空欄可)')||'',section:'regular',date:`2026-${String(mo).padStart(2,'0')}-${String(da).padStart(2,'0')}`,label:`${mo}/${da}`,weekday:wn[d.getDay()],game:prompt('種目')||'',start:'',venue:'',attendance:at,players:'',reentry:'',result:'',blinds:[]});
