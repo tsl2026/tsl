@@ -45,6 +45,10 @@
   .card{background:var(--card);border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 4px rgba(20,30,60,.06)}
   .chead{display:flex;align-items:center;gap:10px;padding:12px 14px 8px;border-left:6px solid var(--navy2)}
   .chead.sun{border-color:var(--sun)}.chead.sat{border-color:var(--sat)}
+  .card.past{background:#f4f5f8}
+  .card.past .gameband{background:#edeff3;color:#8b93a0}
+  .card.past .date{color:#6b7280}
+  .done{background:#9aa1ad;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:8px;letter-spacing:.5px}
   .setsu{font-size:12px;font-weight:800;color:var(--navy2);min-width:38px}
   .dwrap{display:flex;align-items:baseline;gap:6px}
   .date{font-size:19px;font-weight:800}
@@ -190,9 +194,11 @@ function render(){
     const gi=data.events.indexOf(e);
     if(e.section==='post'&&sec!=='post'){const b=document.createElement('div');b.className='secband';b.textContent='POST SEASON';L.appendChild(b);}
     sec=e.section;
-    const card=document.createElement('div');card.className='card';
+    const card=document.createElement('div');
+    const _t=new Date();_t.setHours(0,0,0,0);const past=new Date(e.date)<_t;
+    card.className='card'+(past?' past':'');
     const wc=e.weekday==='日'?'sun':e.weekday==='土'?'sat':'';
-    let h=`<div class="chead ${wc}"><span class="setsu">${e.section==='post'?'PS':esc(e.setsu)}</span>`;
+    let h=`<div class="chead ${wc}"><span class="setsu">${e.section==='post'?'PS':esc(e.setsu)}</span>${past?'<span class="done">実施済</span>':''}`;
     h+=`<div class="dwrap"><span class="date">${esc(e.label)}</span><span class="wd ${wc}">(${esc(e.weekday)})</span></div></div>`;
     if(editing) h+=`<div class="gameband"><input class="game-in" data-i="${gi}" value="${esc(e.game)}" placeholder="種目" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:7px;font-size:15px;font-weight:700;font-family:inherit;color:var(--tan)"></div>`;
     else h+=`<div class="gameband">${esc(e.game)}</div>`;
