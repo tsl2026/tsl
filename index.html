@@ -53,6 +53,13 @@
   .info span{display:inline-flex;align-items:center;gap:4px;background:#eef2f8;color:var(--navy);border-radius:9px;padding:5px 11px;font-weight:600}
   .info b{color:var(--navy);font-weight:700}
   .info a{color:var(--navy);text-decoration:underline}
+  .gameband{margin:2px 12px 6px;padding:9px 14px;background:var(--tanbg);border-radius:10px;font-size:16px;font-weight:700;color:var(--tan);letter-spacing:.3px}
+  .players{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:8px 12px 2px}
+  .players .lbl{font-size:12px;color:var(--mut);font-weight:600;margin-right:2px}
+  .players .chip{background:var(--navy);color:#fff;border-radius:999px;padding:5px 13px;font-size:13.5px;font-weight:700}
+  .players .none{color:#b6bdca;font-size:13px}
+  .metasm{font-size:12.5px;color:var(--mut);padding:6px 14px 12px;display:flex;gap:18px}
+  .metasm b{color:var(--ink);font-weight:600}
   .info input{border:1px solid var(--line);border-radius:7px;padding:5px 7px;font-size:13px;font-family:inherit;width:120px}
   .att{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:6px 12px 4px}
   .m{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border-radius:10px;background:#f6f8fb;min-height:56px;justify-content:center}
@@ -169,10 +176,9 @@ function render(){
     const card=document.createElement('div');card.className='card';
     const wc=e.weekday==='日'?'sun':e.weekday==='土'?'sat':'';
     let h=`<div class="chead ${wc}"><span class="setsu">${e.section==='post'?'PS':esc(e.setsu)}</span>`;
-    h+=`<div class="dwrap"><span class="date">${esc(e.label)}</span><span class="wd ${wc}">(${esc(e.weekday)})</span></div>`;
-    if(editing) h+=`<input class="game-in" data-i="${gi}" value="${esc(e.game)}" style="margin-left:auto;max-width:55%;border:1px solid var(--line);border-radius:8px;padding:6px;font-size:13px;font-family:inherit">`;
-    else h+=`<span class="game">${esc(e.game)}</span>`;
-    h+=`</div>`;
+    h+=`<div class="dwrap"><span class="date">${esc(e.label)}</span><span class="wd ${wc}">(${esc(e.weekday)})</span></div></div>`;
+    if(editing) h+=`<div class="gameband"><input class="game-in" data-i="${gi}" value="${esc(e.game)}" placeholder="種目" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:7px;font-size:15px;font-weight:700;font-family:inherit;color:var(--tan)"></div>`;
+    else h+=`<div class="gameband">${esc(e.game)}</div>`;
     if(editing){
       h+=`<div class="info"><span>⏰<input data-f="start" data-i="${gi}" value="${esc(e.start||'')}" placeholder="18:30"></span>`+
          `<span>📍<input data-f="venue" data-i="${gi}" value="${esc(e.venue||'')}" placeholder="会場"></span></div>`;
@@ -186,6 +192,8 @@ function render(){
          `<span class="nm">${esc(m.name)}</span>`+(m.role?`<span class="rl">${esc(m.role)}</span>`:'')+
          `<span class="mk ${cls(v)}">${v||'—'}</span></div>`;});
     h+=`</div>`;
+    if(!editing){const pl=(e.players||'').split('・').map(s=>s.trim()).filter(Boolean);
+      h+=`<div class="players"><span class="lbl">出場者</span>`+(pl.length?pl.map(p=>`<span class="chip">${esc(p)}</span>`).join(''):`<span class="none">未定</span>`)+`</div>`;}
     const n=lvCount(e.blinds);
     h+=`<div class="crow"><button class="blindbtn ${n?'has':''}" data-blind="${gi}">🃏 ブラインド${n?' '+n+'Lv':''}</button></div>`;
     if(editing){
@@ -193,7 +201,7 @@ function render(){
           return `<div class="f"><b>${lb}</b><input data-f="${k}" data-i="${gi}" value="${esc(e[k]||'')}"></div>`;}).join('')+
         `<button class="btn" style="color:var(--ng)" data-del="${gi}">この予定を削除</button></div>`;
     }else{
-      h+=`<div class="metaview"><span>出場者 <b>${esc(e.players)||'—'}</b></span><span>Re <b>${esc(e.reentry)||'—'}</b></span><span>結果 <b>${esc(e.result)||'—'}</b></span></div>`;
+      h+=`<div class="metasm"><span>Re <b>${esc(e.reentry)||'—'}</b></span><span>結果 <b>${esc(e.result)||'—'}</b></span></div>`;
     }
     card.innerHTML=h;L.appendChild(card);
   });
