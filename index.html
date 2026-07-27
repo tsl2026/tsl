@@ -60,6 +60,7 @@
   .players .lbl{font-size:12px;color:var(--mut);font-weight:600}
   .players .chip{background:#fff;color:var(--navy);border:1px solid #cdd6e6;border-radius:8px;padding:4px 11px;font-size:13.5px;font-weight:600}
   .players .none{color:#b6bdca;font-size:13px}
+  .players .lbl.gap{margin-left:12px}
   .stats{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:0 12px 12px}
   .stats .lbl{font-size:12px;color:var(--mut);font-weight:600}
   .stats .lbl:not(:first-child){margin-left:10px}
@@ -199,15 +200,13 @@ function render(){
          `<span class="mk ${cls(v)}">${v||'—'}</span></div>`;});
     h+=`</div>`;
     if(!editing){const pl=(e.players||'').split('・').map(s=>s.trim()).filter(Boolean);
-      h+=`<div class="players"><span class="lbl">出場者</span>`+(pl.length?pl.map(p=>`<span class="chip">${esc(p)}</span>`).join(''):`<span class="none">未定</span>`)+`</div>`;}
+      h+=`<div class="players"><span class="lbl">出場者</span>`+(pl.length?pl.map(p=>`<span class="chip">${esc(p)}</span>`).join(''):`<span class="none">未定</span>`)+`<span class="lbl gap">Re回数</span><span class="chip">${esc(e.reentry)||'—'}</span><span class="lbl gap">結果</span><span class="chip">${esc(e.result)||'—'}</span></div>`;}
     const n=lvCount(e.blinds);
     h+=`<div class="crow"><button class="blindbtn ${n?'has':''}" data-blind="${gi}">🃏 ブラインド${n?' '+n+'Lv':''}</button></div>`;
     if(editing){
       h+=`<div class="meta">`+['players|出場者','reentry|Re回数','result|結果'].map(f=>{const[k,lb]=f.split('|');
           return `<div class="f"><b>${lb}</b><input data-f="${k}" data-i="${gi}" value="${esc(e[k]||'')}"></div>`;}).join('')+
         `<button class="btn" style="color:var(--ng)" data-del="${gi}">この予定を削除</button></div>`;
-    }else{
-      h+=`<div class="stats"><span class="lbl">Re回数</span><span class="val">${esc(e.reentry)||'—'}</span><span class="lbl">結果</span><span class="val">${esc(e.result)||'—'}</span></div>`;
     }
     card.innerHTML=h;L.appendChild(card);
   });
