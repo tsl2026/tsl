@@ -211,29 +211,7 @@ function vis(){let evs=data.events;
 function updateNext(){const t=new Date();t.setHours(0,0,0,0);const n=data.events.find(e=>new Date(e.date)>=t);
   $('#next').textContent=n?`次戦 ${n.label}(${n.weekday}) ${n.game}`:'シーズン終了';}
 function venueUrl(v){if(!v)return '';const m=data.venueMaps||{};if(m[v])return m[v];if(v.indexOf('カジスタ')>=0)return m['カジスタ東京']||'';if(v.indexOf('VERTEX')>=0||v.indexOf('ベルテック')>=0)return m['VERTEX TOKYO']||'';return '';}
-function selfTeamTotal(){let t=0;data.events.forEach(e=>{if(!e.result)return;const p=parseInt(String(e.result).replace(/[^0-9]/g,''),10);if(!isNaN(p))t+=p;});return t;}
-function renderRanking(){
-  const self={name:data.leagueTeamName||'自チーム',pt:selfTeamTotal(),self:true};
-  const others=(data.otherTeams||[]).map(t=>({name:t.name||'(名称未設定)',pt:(parseInt(t.points,10)||0),self:false}));
-  const arr=[self,...others].sort((a,b)=>b.pt-a.pt);
-  let rank=0,prev=null;arr.forEach((x,i)=>{if(x.pt!==prev){rank=i+1;prev=x.pt;}x.rank=rank;});
-  let h='<div class="rankcard"><div class="rankhead">🏆 リーグ順位表</div><div class="ranksub">各チームの通算ポイント（自チームは各節の結果Pointの合計）</div>';
-  arr.forEach(x=>{const tc=(x.pt>0&&x.rank<=3)?' top'+x.rank:'';
-    h+=`<div class="rankrow${tc}"><span class="rk">${x.rank}</span><span class="rname">${esc(x.name)}${x.self?'<span class="selfbadge">自</span>':''}</span><span class="rpt">${x.pt}<em>pt</em></span></div>`;});
-  if(editing){
-    h+='<div class="rankedit"><div class="reself"><span class="lbl">自チーム名</span><input id="selfname" value="'+esc(self.name)+'"></div>';
-    (data.otherTeams||[]).forEach((t,i)=>{h+=`<div class="reteam"><input class="tname" data-i="${i}" value="${esc(t.name)}" placeholder="チーム名"><input class="tpt" data-i="${i}" value="${esc(t.points)}" placeholder="pt" inputmode="numeric"><button class="btn tdel" data-i="${i}">✕</button></div>`;});
-    h+='<button class="btn tan" id="addteam">＋ 他チーム追加</button></div>';
-  }
-  h+='</div>';$('#ranking').innerHTML=h;
-  if(editing){
-    const sn=document.getElementById('selfname');if(sn)sn.addEventListener('input',()=>{data.leagueTeamName=sn.value;save();});
-    document.querySelectorAll('#ranking .tname').forEach(i=>i.addEventListener('input',()=>{data.otherTeams[+i.dataset.i].name=i.value;save();}));
-    document.querySelectorAll('#ranking .tpt').forEach(i=>{i.addEventListener('input',()=>{data.otherTeams[+i.dataset.i].points=i.value;save();});i.addEventListener('change',()=>{renderRanking();});});
-    document.querySelectorAll('#ranking .tdel').forEach(b=>b.addEventListener('click',()=>{data.otherTeams.splice(+b.dataset.i,1);save();renderRanking();}));
-    const at=document.getElementById('addteam');if(at)at.addEventListener('click',()=>{(data.otherTeams=data.otherTeams||[]).push({name:'',points:0});save();renderRanking();});
-  }
-}
+function renderRanking(){var r=$('#ranking');if(r)r.innerHTML='';}
 function render(){
   renderRanking();
   const L=$('#list');L.innerHTML='';const evs=vis();let sec='';
