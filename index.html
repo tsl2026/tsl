@@ -21,6 +21,9 @@
   .rules{background:var(--card);border-radius:14px;padding:13px 15px;margin-top:12px;font-size:14px;line-height:1.9;border-left:5px solid var(--tan)}
   .rules h3{margin:0 0 4px;font-size:14px;color:var(--navy)}
   .rules .em{color:var(--sun);font-weight:700}
+  .rules-head{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:700;color:var(--navy);font-size:14px}
+  .rules-head .chev{font-size:12px;color:var(--mut);transition:.15s}
+  .rules-body{margin-top:8px}
   .bar{display:flex;align-items:center;gap:10px;margin:14px 2px 8px;flex-wrap:wrap}
   .next{background:var(--navy2);color:#fff;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px}
   .bar label{font-size:13px;color:var(--mut);display:flex;align-items:center;gap:5px}
@@ -139,9 +142,10 @@ const save=()=>{try{localStorage.setItem(LS,JSON.stringify(data));}catch(e){}};
 const CYCLE=['','○','△','×'];
 function renderTop(){
   $('#pgtitle').textContent=data.title;$('#pgsub').textContent=data.subtitle;
-  let r='<h3>ルール</h3>';
-  data.rules.forEach(x=>r+=`<div>■${esc(x.text)}<span class="em">${esc(x.em)}</span>${esc(x.tail||'')}</div>`);
-  $('#rules').innerHTML=r;
+  const body=data.rules.map(x=>`<div>■${esc(x.text)}<span class="em">${esc(x.em)}</span>${esc(x.tail||'')}</div>`).join('');
+  $('#rules').innerHTML=`<div class="rules-head" id="rulesHead"><span>📋 ルール（タップで表示）</span><span class="chev" id="rulesChev">▼</span></div><div class="rules-body" id="rulesBody" style="display:none">${body}</div>`;
+  const bd=$('#rulesBody'),cv=$('#rulesChev'),hd=$('#rulesHead');
+  hd.addEventListener('click',()=>{const open=bd.style.display!=='none';bd.style.display=open?'none':'block';cv.textContent=open?'▼':'▲';hd.querySelector('span').textContent=open?'📋 ルール（タップで表示）':'📋 ルール';});
 }
 let search={cat:'',val:''};
 function vis(){let evs=data.events;
