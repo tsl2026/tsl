@@ -60,6 +60,10 @@
   .players .lbl{font-size:12px;color:var(--mut);font-weight:600}
   .players .chip{background:#fff;color:var(--navy);border:1px solid #cdd6e6;border-radius:8px;padding:4px 11px;font-size:13.5px;font-weight:600}
   .players .none{color:#b6bdca;font-size:13px}
+  .stats{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:0 12px 12px}
+  .stats .lbl{font-size:12px;color:var(--mut);font-weight:600}
+  .stats .lbl:not(:first-child){margin-left:10px}
+  .stats .val{background:#fff;color:var(--navy);border:1px solid #cdd6e6;border-radius:8px;padding:4px 11px;font-size:13.5px;font-weight:600;min-width:34px;text-align:center}
   .metasm{font-size:12.5px;color:var(--mut);padding:6px 14px 12px;display:flex;gap:18px}
   .metasm b{color:var(--ink);font-weight:600}
   .info input{border:1px solid var(--line);border-radius:7px;padding:5px 7px;font-size:13px;font-family:inherit;width:120px}
@@ -203,7 +207,7 @@ function render(){
           return `<div class="f"><b>${lb}</b><input data-f="${k}" data-i="${gi}" value="${esc(e[k]||'')}"></div>`;}).join('')+
         `<button class="btn" style="color:var(--ng)" data-del="${gi}">この予定を削除</button></div>`;
     }else{
-      h+=`<div class="metasm"><span>Re <b>${esc(e.reentry)||'—'}</b></span><span>結果 <b>${esc(e.result)||'—'}</b></span></div>`;
+      h+=`<div class="stats"><span class="lbl">Re回数</span><span class="val">${esc(e.reentry)||'—'}</span><span class="lbl">結果</span><span class="val">${esc(e.result)||'—'}</span></div>`;
     }
     card.innerHTML=h;L.appendChild(card);
   });
