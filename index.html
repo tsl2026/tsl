@@ -47,6 +47,11 @@
   .empty{text-align:center;color:var(--mut);padding:34px 10px;font-size:14px}
   .rankcard{background:var(--card);border-radius:16px;padding:12px 14px;margin:12px 0;border:1px solid var(--line)}
   .rankhead{font-size:14px;font-weight:700;color:var(--redtx);margin-bottom:2px}
+  .rankhead2{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:14px;font-weight:700;color:var(--redtx)}
+  .rankhead2 .chev{color:var(--mut);font-size:12px}
+  .rankbody{margin-top:8px}
+  .standwrap{max-height:360px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  table.stand thead th{position:sticky;top:0;background:var(--card);z-index:1}
   .ranksub{font-size:11px;color:var(--mut);margin-bottom:8px}
   .rankrow{display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line)}
   .rankrow:last-child{border-bottom:none}
@@ -227,20 +232,23 @@ function updateNext(){const t=new Date();t.setHours(0,0,0,0);const n=data.events
   $('#next').textContent=n?`次戦 ${n.label}(${n.weekday}) ${n.game}`:'シーズン終了';}
 function venueUrl(v){if(!v)return '';const m=data.venueMaps||{};if(m[v])return m[v];if(v.indexOf('カジスタ')>=0)return m['カジスタ東京']||'';if(v.indexOf('VERTEX')>=0||v.indexOf('ベルテック')>=0)return m['VERTEX TOKYO']||'';return '';}
 let rankView='東西';
+let rankOpen=true;
 function renderRanking(){
   const el=$('#ranking');if(!el)return;const L=data.leagues||{};
   const tabs=['総合',...Object.keys(L)];
-  let h='<div class="rankcard"><div class="rankhead">🏆 リーグ順位表</div><div class="ranksub">出典: TOKYO SUPER LEAGUE 公式（第2節終了時点）</div>';
+  let h='<div class="rankcard"><div class="rankhead2" id="rankHead"><span>🏆 リーグ順位表</span><span class="chev">'+(rankOpen?'▲':'▼')+'</span></div>';
+  h+='<div class="rankbody" style="'+(rankOpen?'':'display:none')+'"><div class="ranksub">出典: TOKYO SUPER LEAGUE 公式（第2節終了時点）</div>';
   h+='<div class="lgtabs">'+tabs.map(t=>`<span class="lgtab${t===rankView?' act':''}" data-lg="${esc(t)}">${esc(t)}</span>`).join('')+'</div>';
   const isAll=rankView==='総合';let rows;
   if(isAll){rows=[];Object.keys(L).forEach(lg=>L[lg].forEach(r=>rows.push({team:r[0],r1:r[1],r2:r[2],tot:r[3],lg:lg})));rows.sort((a,b)=>b.tot-a.tot);}
   else{rows=(L[rankView]||[]).map(r=>({team:r[0],r1:r[1],r2:r[2],tot:r[3],lg:rankView}));}
   let rank=0,prev=null;rows.forEach((x,i)=>{if(x.tot!==prev){rank=i+1;prev=x.tot;}x.rank=rank;});
-  h+='<table class="stand"><thead><tr><th class="rk">#</th><th class="l">チーム</th><th>R1</th><th>R2</th><th>合計</th></tr></thead><tbody>';
+  h+='<div class="standwrap"><table class="stand"><thead><tr><th class="rk">#</th><th class="l">チーム</th><th>R1</th><th>R2</th><th>合計</th></tr></thead><tbody>';
   rows.forEach(x=>{const self=x.team.replace(/\s/g,'').toLowerCase()==='showdownseekers';
     const med=x.rank===1?' g':x.rank===2?' s':x.rank===3?' b':'';
     h+=`<tr class="${self?'self':''}"><td class="rk${med}">${x.rank}</td><td class="tm">${esc(x.team)}${isAll?`<span class="lg">${esc(x.lg)}</span>`:''}</td><td>${x.r1}</td><td>${x.r2}</td><td class="tot">${x.tot}<span style="font-size:10px;color:var(--mut);font-weight:400">pt</span></td></tr>`;});
-  h+='</tbody></table></div>';el.innerHTML=h;
+  h+='</tbody></table></div></div></div>';el.innerHTML=h;
+  el.querySelector('#rankHead').addEventListener('click',()=>{rankOpen=!rankOpen;renderRanking();});
   el.querySelectorAll('.lgtab').forEach(t=>t.addEventListener('click',()=>{rankView=t.dataset.lg;renderRanking();}));
 }
 function render(){
