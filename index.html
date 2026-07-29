@@ -21,6 +21,11 @@
   .hero{background:linear-gradient(135deg,#c1121f,#6f0c14);color:#fff;border-radius:16px;padding:16px 18px;border:1px solid #7a0d16}
   .hero h1{margin:0;font-size:22px;font-weight:800}
   .hero .sub{opacity:.9;font-size:12px;letter-spacing:1.5px;margin-top:3px}
+  .tabs{display:flex;gap:6px;margin-top:12px;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:5px;position:sticky;top:6px;z-index:20}
+  .tab{flex:1;background:transparent;color:var(--mut);border:none;border-radius:9px;padding:10px 6px;font-size:13.5px;font-weight:800;letter-spacing:.3px;cursor:pointer;transition:.15s;white-space:nowrap}
+  .tab.active{background:var(--red);color:#fff}
+  .panel{display:none}
+  .panel.active{display:block}
   .rules{background:var(--card);border-radius:14px;padding:13px 15px;margin-top:12px;font-size:14px;line-height:1.9;border-left:5px solid var(--red)}
   .rules h3{margin:0 0 4px;font-size:14px;color:var(--redtx)}
   .rules .em{color:var(--redtx);font-weight:700}
@@ -170,8 +175,12 @@
 <body>
 <div class="wrap">
   <div class="hero"><h1 id="pgtitle">TSL スケジュール</h1><div class="sub" id="pgsub"></div></div>
-  <div class="rules" id="rules"></div>
-  <div id="ranking"></div>
+  <nav class="tabs" id="tabs" role="tablist">
+    <button class="tab active" data-tab="schedule" role="tab">📅 スケジュール</button>
+    <button class="tab" data-tab="rank" role="tab">🏆 順位表</button>
+    <button class="tab" data-tab="rules" role="tab">📋 ルール</button>
+  </nav>
+  <section class="panel active" data-panel="schedule">
   <div class="bar">
     <span class="next" id="next">—</span>
     <label class="only-view"><input type="checkbox" id="up"> 今後のみ</label>
@@ -187,6 +196,13 @@
     <button class="btn" id="sclear">クリア</button>
   </div>
   <div id="list"></div>
+  </section>
+  <section class="panel" data-panel="rank">
+    <div id="ranking"></div>
+  </section>
+  <section class="panel" data-panel="rules">
+    <div class="rules" id="rules"></div>
+  </section>
   <div class="foot" id="foot"></div>
 </div>
 <div class="savebar">
@@ -216,7 +232,7 @@ function renderTop(){
   const body=data.rules.map(x=>`<div>■${esc(x.text)}<span class="em">${esc(x.em)}</span>${esc(x.tail||'')}</div>`).join('');
   const rb=data.rulebook?`<div class="rulebook"><a href="${esc(data.rulebook)}" target="_blank" rel="noopener">📖 公式ルールブックを開く ↗</a></div>`:'';
   const closed='📋 ルール　🔗ルールブックリンク有（タップで表示）',open2='📋 ルール　🔗ルールブックリンク有';
-  $('#rules').innerHTML=`<div class="rules-head" id="rulesHead"><span>${closed}</span><span class="chev" id="rulesChev">▼</span></div><div class="rules-body" id="rulesBody" style="display:none">${body}${rb}</div>`;
+  $('#rules').innerHTML=`<div class="rules-head" id="rulesHead"><span>${open2}</span><span class="chev" id="rulesChev">▲</span></div><div class="rules-body" id="rulesBody" style="display:block">${body}${rb}</div>`;
   const bd=$('#rulesBody'),cv=$('#rulesChev'),hd=$('#rulesHead');
   hd.addEventListener('click',()=>{const open=bd.style.display!=='none';bd.style.display=open?'none':'block';cv.textContent=open?'▼':'▲';hd.querySelector('span').textContent=open?closed:open2;});
 }
@@ -365,6 +381,23 @@ $('#ovClose').addEventListener('click',()=>$('#ov').classList.remove('open'));
 $('#ov').addEventListener('click',e=>{if(e.target.id==='ov')$('#ov').classList.remove('open');});
 $('#foot').innerHTML='公開: このファイル(index.html)をGitHub Pages等に置くと、リンクを知る人は誰でも閲覧できます。<br>更新: 「編集」で変更→「保存(DL)」→公開先のindex.htmlを差し替え。編集パスコード初期値 tsl2026。';
 renderTop();setMode(false);
+</script>
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  var panels=[].slice.call(document.querySelectorAll('.panel'));
+  var KEY='tsl_tab_v1';
+  function activate(name){
+    tabs.forEach(function(t){t.classList.toggle('active',t.getAttribute('data-tab')===name);});
+    panels.forEach(function(p){p.classList.toggle('active',p.getAttribute('data-panel')===name);});
+    try{localStorage.setItem(KEY,name);}catch(e){}
+    window.scrollTo(0,0);
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){activate(t.getAttribute('data-tab'));});});
+  var init='schedule';try{var v=localStorage.getItem(KEY);if(v)init=v;}catch(e){}
+  if(!panels.some(function(p){return p.getAttribute('data-panel')===init;}))init='schedule';
+  activate(init);
+})();
 </script>
 </body>
 </html>
