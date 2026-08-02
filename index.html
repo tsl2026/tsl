@@ -282,7 +282,7 @@ function render(){
     const _t=new Date();_t.setHours(0,0,0,0);const past=new Date(e.date)<_t;
     card.className='card'+(past?' past':'');
     const wc=e.weekday==='日'?'sun':e.weekday==='土'?'sat':'';
-    const isC=(e.id in collapsed)?collapsed[e.id]:past;
+    const isC=(e.id in collapsed)?collapsed[e.id]:true;
     let h=`<div class="chead ${wc}"><span class="setsu">${e.section==='post'?'PS':esc(e.setsu)}</span>${past?'<span class="done">実施済</span>':''}`;
     h+=`<div class="dwrap"><span class="date">${esc(e.label)}</span><span class="wd ${wc}">(${esc(e.weekday)})</span></div><span class="ctog">${isC?'▼':'▲'}</span></div>`;
     if(editing) h+=`<div class="gameband"><input class="game-in" data-i="${gi}" value="${esc(e.game)}" placeholder="種目" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:7px;font-size:15px;font-weight:700;font-family:inherit;color:var(--tan)"></div>`;
