@@ -96,6 +96,7 @@
   table.stand td.tot{color:var(--redtx);font-weight:800}
   .card{background:var(--card);border-radius:16px;margin-bottom:12px;overflow:hidden;border:1px solid #232329}
   .chead{display:flex;align-items:center;gap:10px;padding:12px 14px 8px;border-left:6px solid #3a3a42}
+  .ctog{margin-left:auto;color:var(--mut);font-size:13px;padding:0 2px;flex:0 0 auto}
   .chead.sun{border-color:var(--sun)}.chead.sat{border-color:var(--sat)}
   .card.past{background:#131315;border-color:#1e1e22;opacity:.82}
   .card.past .gameband{background:#241618;color:#9a6a6e;border-color:#3a2224}
@@ -221,7 +222,7 @@
 let data=JSON.parse(document.getElementById('tsl-data').textContent);
 const LS='tsl_schedule_v3';
 try{const s=localStorage.getItem(LS);if(s)data=JSON.parse(s);}catch(e){}
-let editing=false,curEvent=null;
+let editing=false,curEvent=null;let collapsed={};
 const $=s=>document.querySelector(s);
 const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cls=m=>m==='○'?'o':m==='△'?'t':m==='×'?'x':'e';
@@ -281,10 +282,12 @@ function render(){
     const _t=new Date();_t.setHours(0,0,0,0);const past=new Date(e.date)<_t;
     card.className='card'+(past?' past':'');
     const wc=e.weekday==='日'?'sun':e.weekday==='土'?'sat':'';
+    const isC=(e.id in collapsed)?collapsed[e.id]:past;
     let h=`<div class="chead ${wc}"><span class="setsu">${e.section==='post'?'PS':esc(e.setsu)}</span>${past?'<span class="done">実施済</span>':''}`;
-    h+=`<div class="dwrap"><span class="date">${esc(e.label)}</span><span class="wd ${wc}">(${esc(e.weekday)})</span></div></div>`;
+    h+=`<div class="dwrap"><span class="date">${esc(e.label)}</span><span class="wd ${wc}">(${esc(e.weekday)})</span></div><span class="ctog">${isC?'▼':'▲'}</span></div>`;
     if(editing) h+=`<div class="gameband"><input class="game-in" data-i="${gi}" value="${esc(e.game)}" placeholder="種目" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:7px;font-size:15px;font-weight:700;font-family:inherit;color:var(--tan)"></div>`;
     else h+=`<div class="gameband">${esc(e.game)}</div>`;
+    h+=`<div class="cbody"${isC?' style="display:none"':''}>`;
     if(editing){
       h+=`<div class="info"><span>⏰<input data-f="start" data-i="${gi}" value="${esc(e.start||'')}" placeholder="18:30"></span>`+
          `<span>📍<input data-f="venue" data-i="${gi}" value="${esc(e.venue||'')}" placeholder="会場"></span></div>`;
@@ -299,15 +302,15 @@ function render(){
          `<span class="mk ${cls(v)}">${v||'—'}</span></div>`;});
     h+=`</div>`;
     if(!editing){const pl=(e.players||'').split('・').map(s=>s.trim()).filter(Boolean);
-      h+=`<div class="players"><span class="lbl">出場者</span>`+(pl.length?pl.map(p=>`<span class="chip">${esc(p)}</span>`).join(''):`<span class="none">未定</span>`)+`<span class="lbl gap">Re回数</span><span class="chip">${esc(e.reentry)||'—'}</span><span class="lbl gap">結果</span><span class="chip">${esc(e.result)||'—'}</span></div>`;}
+      h+=`<div class="players"><span class="lbl">出場者</span>`+(pl.length?pl.map(p=>`<span class="chip">${esc(p)}</span>`).join(''):`<span class="none">未定</span>`)+`<span class="lbl gap">Re回数</span><span class="chip">${esc(e.reentry)||'—'}</span></div>`;}
     const n=lvCount(e.blinds);
     h+=`<div class="crow"><button class="blindbtn ${n?'has':''}" data-blind="${gi}">🃏 ブラインド${n?' '+n+'Lv':''}</button></div>`;
     if(editing){
-      h+=`<div class="meta">`+['players|出場者','reentry|Re回数','result|結果'].map(f=>{const[k,lb]=f.split('|');
+      h+=`<div class="meta">`+['players|出場者','reentry|Re回数'].map(f=>{const[k,lb]=f.split('|');
           return `<div class="f"><b>${lb}</b><input data-f="${k}" data-i="${gi}" value="${esc(e[k]||'')}"></div>`;}).join('')+
         `<button class="btn" style="color:var(--ng)" data-del="${gi}">この予定を削除</button></div>`;
     }
-    card.innerHTML=h;L.appendChild(card);
+    h+=`</div>`;card.innerHTML=h;const _hd=card.querySelector(".chead"),_bd=card.querySelector(".cbody"),_tg=card.querySelector(".ctog");if(_hd&&_bd){_hd.style.cursor="pointer";_hd.addEventListener("click",()=>{const c=_bd.style.display==="none";_bd.style.display=c?"":"none";if(_tg)_tg.textContent=c?"▲":"▼";collapsed[e.id]=!c;});}L.appendChild(card);
   });
   bind();updateNext();
 }
