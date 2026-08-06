@@ -94,6 +94,15 @@
   table.stand tr.self td.tm{color:var(--redtx)}
   table.stand .lg{font-size:10px;color:var(--mut);margin-left:6px;font-weight:400}
   table.stand td.tot{color:var(--redtx);font-weight:800}
+  table.stand th.rk,table.stand td.rk{position:sticky;left:0;z-index:2;padding-left:0;padding-right:0;width:34px;min-width:34px}
+  table.stand td.rk{background:#1a1a1e}
+  table.stand th.l,table.stand td.tm{position:sticky;left:34px;z-index:2}
+  table.stand td.tm{background:#1a1a1e}
+  table.stand td.tot{position:sticky;right:0;z-index:2;background:#1a1a1e}
+  table.stand thead th{z-index:3}
+  table.stand thead th.tot-h{position:sticky;right:0}
+  table.stand thead th.rk,table.stand thead th.l,table.stand thead th.tot-h{z-index:4}
+  table.stand tr.self td.rk,table.stand tr.self td.tm,table.stand tr.self td.tot{background:#32161d}
   .card{background:var(--card);border-radius:16px;margin-bottom:12px;overflow:hidden;border:1px solid #232329}
   .chead{display:flex;align-items:center;gap:10px;padding:12px 14px 8px;border-left:6px solid #3a3a42}
   .ctog{margin-left:auto;color:var(--mut);font-size:13px;padding:0 2px;flex:0 0 auto}
@@ -262,7 +271,7 @@ function renderRanking(){
   if(isAll){rows=[];Object.keys(L).forEach(lg=>L[lg].forEach(r=>rows.push({team:r[0],r1:r[1],r2:r[2],r3:r[3],r4:r[4],r5:r[5],tot:r[6],lg:lg})));rows.sort((a,b)=>b.tot-a.tot);}
   else{rows=(L[rankView]||[]).map(r=>({team:r[0],r1:r[1],r2:r[2],r3:r[3],r4:r[4],r5:r[5],tot:r[6],lg:rankView}));}
   let rank=0,prev=null;rows.forEach((x,i)=>{if(x.tot!==prev){rank=i+1;prev=x.tot;}x.rank=rank;});
-  h+='<div class="standwrap"><table class="stand"><thead><tr><th class="rk">#</th><th class="l">チーム</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th><th>合計</th></tr></thead><tbody>';
+  h+='<div class="standwrap"><table class="stand"><thead><tr><th class="rk">#</th><th class="l">チーム</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th><th class="tot-h">合計</th></tr></thead><tbody>';
   rows.forEach(x=>{const self=x.team.replace(/\s/g,'').toLowerCase()==='showdownseekers';
     const med=x.rank===1?' g':x.rank===2?' s':x.rank===3?' b':'';
     h+=`<tr class="${self?'self':''}"><td class="rk${med}">${x.rank}</td><td class="tm">${esc(x.team)}${isAll?`<span class="lg">${esc(x.lg)}</span>`:''}</td><td>${x.r1}</td><td>${x.r2}</td><td>${x.r3==null?'—':x.r3}</td><td>${x.r4==null?'—':x.r4}</td><td>${x.r5==null?'—':x.r5}</td><td class="tot">${x.tot}<span style="font-size:10px;color:var(--mut);font-weight:400">pt</span></td></tr>`;});
